@@ -17,7 +17,7 @@ func NewOpenAIClient(client *openai.Client) *OpenAIClient {
 	return &OpenAIClient{Client: client}
 }
 
-func (a *OpenAIClient) Api(csvData string, prompt string) (string, error) {
+func (a *OpenAIClient) Analyze(csvData string, prompt string) (string, error) {
 	//Инициализируем API ключ
 	ctx := context.Background()
 	client := a.Client
