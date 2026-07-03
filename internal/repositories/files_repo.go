@@ -9,6 +9,7 @@ import (
 type FilesRepository interface {
 	CreateFiles(f models.Files) (models.Files, error)
 	GetFilesByUserId(userId int) ([]models.Files, error)
+	GetFileById(id int) (models.Files, error)
 	DeleteFile(id int) error
 }
 
@@ -43,4 +44,13 @@ func (r *FilesRepo) DeleteFile(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *FilesRepo) GetFileById(id int) (models.Files, error) {
+	var f models.Files
+	err := r.db.Select(&f, `SELECT id, user_id, file_id, created_at, question, answer FROM queries WHERE id = $1`, id)
+	if err != nil {
+		return models.Files{}, err
+	}
+	return f, nil
 }
