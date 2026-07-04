@@ -32,3 +32,11 @@ var (
 	ErrorGetFile     = errors.New("error getting file")
 	CreateQueryError = errors.New("error creating query")
 )
+
+// Ошибки парсера
+var (
+	ErrorOpenFile  = errors.New("error opening file")
+	ErrorReadFile  = errors.New("error reading file")
+	InvalidFormat  = errors.New("invalid format")
+	ErrorEmptyFile = errors.New("empty file")
+)
