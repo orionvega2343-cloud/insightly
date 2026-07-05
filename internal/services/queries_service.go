@@ -4,6 +4,7 @@ import (
 	"insightly/internal/ai"
 	"insightly/internal/errs"
 	"insightly/internal/models"
+	"insightly/internal/parser"
 	"insightly/internal/repositories"
 )
 
@@ -24,13 +25,15 @@ func NewQueriesService(f repositories.FilesRepository, q repositories.QueriesRep
 
 func (s *QueriesServiceImpl) CreateQueries(fileId, userId int, prompt string) (models.Queries, error) {
 	// Получаем файл по fileId
-	_, err := s.F.GetFileById(fileId)
+	file, err := s.F.GetFileById(fileId)
 	if err != nil {
 		return models.Queries{}, errs.ErrorGetFile
 	}
 
-	// TODO: вызов парсера CSV по file.Path
-	csvData := "заглушка"
+	csvData, err := parser.CsvParser(file.Path)
+	if err != nil {
+		return models.Queries{}, errs.InvalidPath
+	}
 
 	// Вызов AI
 	answer, err := s.Ai.Analyze(csvData, prompt)
@@ -38,7 +41,6 @@ func (s *QueriesServiceImpl) CreateQueries(fileId, userId int, prompt string) (m
 		return models.Queries{}, errs.RequestFailed
 	}
 
-	// Формируем модель
 	q := models.Queries{
 		UserId:   userId,
 		FileId:   fileId,
@@ -46,7 +48,6 @@ func (s *QueriesServiceImpl) CreateQueries(fileId, userId int, prompt string) (m
 		Answer:   answer,
 	}
 
-	// Сохраняем в БД
 	result, err := s.Q.CreateQueries(q)
 	if err != nil {
 		return models.Queries{}, errs.CreateQueryError
