@@ -17,11 +17,13 @@ import (
 type UserService interface {
 	Register(u models.User) (models.User, error)
 	Login(email, password, secret string) (string, string, error)
+	GenerateAccessToken(userId int, email string) (string, error)
 }
 
 type UserServiceImpl struct {
-	Ur  repositories.UsersRepository
-	Rtr repositories.RefreshTokensRepository
+	Ur     repositories.UsersRepository
+	Rtr    repositories.RefreshTokensRepository
+	Secret string
 }
 
 type Claims struct {
@@ -30,8 +32,8 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewUserServiceImpl(ur repositories.UsersRepository, rtr repositories.RefreshTokensRepository) *UserServiceImpl {
-	return &UserServiceImpl{Ur: ur, Rtr: rtr}
+func NewUserServiceImpl(ur repositories.UsersRepository, rtr repositories.RefreshTokensRepository, secret string) *UserServiceImpl {
+	return &UserServiceImpl{Ur: ur, Rtr: rtr, Secret: secret}
 }
 
 func (s *UserServiceImpl) Register(u models.User) (models.User, error) {
@@ -109,4 +111,17 @@ func (s *UserServiceImpl) generateRefreshToken() (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(bytes), nil
+}
+
+func (s *UserServiceImpl) GenerateAccessToken(userId int, email string) (string, error) {
+	var c Claims
+	c.UserId = userId
+	c.Email = email
+	c.ExpiresAt = jwt.NewNumericDate(time.Now().Add(24 * time.Hour))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	tokenString, err := token.SignedString([]byte(s.Secret))
+	if err != nil {
+		return "", errs.InvalidJWTError
+	}
+	return tokenString, nil
 }
