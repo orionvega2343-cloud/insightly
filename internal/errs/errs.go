@@ -31,6 +31,7 @@ var (
 var (
 	ErrorGetFile     = errors.New("error getting file")
 	CreateQueryError = errors.New("error creating query")
+	InvalidPath      = errors.New("invalid path")
 )
 
 // Ошибки парсера

@@ -4,6 +4,7 @@ import (
 	"insightly/internal/errs"
 	"insightly/internal/models"
 	"insightly/internal/repositories"
+	"os"
 )
 
 type FilesService interface {
@@ -21,11 +22,11 @@ func NewFilesService(f repositories.FilesRepository) *FilesServiceImpl {
 }
 
 func (s *FilesServiceImpl) CreateFiles(f models.Files) (models.Files, error) {
-	//data := []byte("Привет мир")
-	//err := os.WriteFile("uploads/uploads.go", data, 0666)
-	//if err != nil {
-	//	return f, errs.FailedSaveFile
-	//}
+	data := []byte("Hello world")
+	err := os.WriteFile(f.Path, data, 0666)
+	if err != nil {
+		return f, errs.FailedSaveFile
+	}
 
 	file, err := s.F.CreateFiles(f)
 	if err != nil {
