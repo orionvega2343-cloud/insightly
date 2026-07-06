@@ -1,14 +1,19 @@
 package services
 
 import (
+	"fmt"
 	"insightly/internal/errs"
 	"insightly/internal/models"
 	"insightly/internal/repositories"
 	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/google/uuid"
 )
 
 type FilesService interface {
-	CreateFiles(f models.Files) (models.Files, error)
+	CreateFiles(userId int, filename string, data []byte) (models.Files, error)
 	GetFilesByUserId(userId int) ([]models.Files, error)
 	DeleteFile(id int) error
 }
@@ -21,18 +26,42 @@ func NewFilesService(f repositories.FilesRepository) *FilesServiceImpl {
 	return &FilesServiceImpl{F: f}
 }
 
-func (s *FilesServiceImpl) CreateFiles(f models.Files) (models.Files, error) {
-	data := []byte("Hello world")
-	err := os.WriteFile(f.Path, data, 0666)
-	if err != nil {
-		return f, errs.FailedSaveFile
+func (s *FilesServiceImpl) CreateFiles(userId int, filename string, data []byte) (models.Files, error) {
+	//Проверяем расширение файла,
+	//принимаем только .csv
+	ext := filepath.Ext(filename)
+	if !strings.EqualFold(ext, ".csv") {
+		return models.Files{}, errs.InvalidFileExtension
 	}
 
-	file, err := s.F.CreateFiles(f)
+	id := uuid.New().String()
+
+	//Собираем пути
+	dir := fmt.Sprintf("uploads/%d", userId)
+	err := os.MkdirAll(dir, 0755)
 	if err != nil {
-		return f, errs.FailedCreateFile
+		return models.Files{}, err
 	}
-	return file, nil
+
+	//записываем в байты
+	fullPath := filepath.Join(dir, id+ext)
+	err = os.WriteFile(fullPath, data, 0666)
+	if err != nil {
+		return models.Files{}, err
+	}
+
+	f := models.Files{
+		UserId: userId,
+		Name:   filename,
+		Path:   fullPath,
+	}
+
+	created, err := s.F.CreateFiles(f)
+	if err != nil {
+		return models.Files{}, errs.FailedCreateFile
+	}
+
+	return created, nil
 }
 
 func (s *FilesServiceImpl) GetFilesByUserId(userId int) ([]models.Files, error) {
