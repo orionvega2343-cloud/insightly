@@ -17,8 +17,7 @@ var (
 	RefreshTokenNotFound = errors.New("token not found")
 	InvalidGettingToken  = errors.New("invalid token")
 	TokenExpiredError    = errors.New("excessive waiting time")
-	FailedSaveFile       = errors.New("failed to save file")
-	FailedCreateFile     = errors.New("failed to create file")
+
 )
 
 // Ошибки API
@@ -40,4 +39,11 @@ var (
 	ErrorReadFile  = errors.New("error reading file")
 	InvalidFormat  = errors.New("invalid format")
 	ErrorEmptyFile = errors.New("empty file")
+)
+
+//Ошибки файлов
+var (
+	FailedSaveFile       = errors.New("failed to save file")
+	FailedCreateFile     = errors.New("failed to create file")
+	InvalidFileExtension = errors.New("invalid file extension")
 )

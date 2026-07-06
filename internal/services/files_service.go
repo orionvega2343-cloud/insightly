@@ -15,6 +15,7 @@ import (
 type FilesService interface {
 	CreateFiles(userId int, filename string, data []byte) (models.Files, error)
 	GetFilesByUserId(userId int) ([]models.Files, error)
+	GetFileById(id int) (models.Files, error)
 	DeleteFile(id int) error
 }
 
@@ -66,6 +67,10 @@ func (s *FilesServiceImpl) CreateFiles(userId int, filename string, data []byte)
 
 func (s *FilesServiceImpl) GetFilesByUserId(userId int) ([]models.Files, error) {
 	return s.F.GetFilesByUserId(userId)
+}
+
+func (s *FilesServiceImpl) GetFileById(id int) (models.Files, error) {
+	return s.F.GetFileById(id)
 }
 
 func (s *FilesServiceImpl) DeleteFile(id int) error {

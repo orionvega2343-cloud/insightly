@@ -24,6 +24,8 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		}
 		cut := strings.TrimPrefix(tokenString, "Bearer ")
 
+
+		//Валидация JWT токена
 		token, err := jwt.ParseWithClaims(cut, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
 		})
@@ -32,13 +34,14 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		//Приведение к type assertion
 		claims, ok := token.Claims.(*Claims)
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{})
 			c.Abort()
 			return
 		}
+		//Установка значений и запуск мидлвара
 		c.Set("userId", claims.UserId)
 		c.Set("email", claims.Email)
 		c.Next()
