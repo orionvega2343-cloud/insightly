@@ -20,7 +20,7 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 }
 
 func (r *UserRepo) CreateUser(u models.User) (models.User, error) {
-	err := r.db.QueryRow(`INSERT INTO users(email,password,created_at) VALUES ($1,$2,$3) RETURNING id`, u.Email, u.Password, u.CreatedAt).Scan(&u.Id)
+	err := r.db.QueryRow(`INSERT INTO users(email,password) VALUES ($1,$2) RETURNING id, created_at`, u.Email, u.Password).Scan(&u.Id, &u.CreatedAt)
 	if err != nil {
 		return models.User{}, err
 	}

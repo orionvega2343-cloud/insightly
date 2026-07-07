@@ -38,6 +38,7 @@ func (h *UserHandlerImpl) Register(c *gin.Context) {
 		return
 	}
 
+	user.Password = ""
 	c.JSON(http.StatusCreated, gin.H{"user": user})
 	return
 }
