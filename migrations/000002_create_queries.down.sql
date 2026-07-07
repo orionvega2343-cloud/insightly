@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS queries()
+DROP TABLE IF EXISTS files;

@@ -4,4 +4,4 @@ CREATE TABLE IF NOT EXISTS refresh_tokens(
     expires_at TIMESTAMP NOT NULL,
     token TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
-)
+);

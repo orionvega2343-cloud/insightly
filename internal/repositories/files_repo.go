@@ -48,7 +48,7 @@ func (r *FilesRepo) DeleteFile(id int) error {
 
 func (r *FilesRepo) GetFileById(id int) (models.Files, error) {
 	var f models.Files
-	err := r.db.Select(&f, `SELECT id, user_id, file_id, created_at, question, answer FROM queries WHERE id = $1`, id)
+	err := r.db.QueryRow(`SELECT id, user_id, filename, filepath FROM files WHERE id = $1`, id).Scan(&f.Id, &f.UserId, &f.Name, &f.Path)
 	if err != nil {
 		return models.Files{}, err
 	}
