@@ -11,17 +11,19 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("[FATAL] Failed to load .env: ", err)
-	}
 
+	if err := godotenv.Load(".env"); err != nil {
+		log.Println("[WARN] .env file not found, relying on system environment variables")
+	}
 	client := openai.NewClient(option.WithAPIKey(os.Getenv("OPENAI_API_KEY")))
 	aiClient := ai.NewOpenAIClient(&client)
 
@@ -32,6 +34,13 @@ func main() {
 	defer database.Close()
 
 	secret := os.Getenv("JWT_SECRET")
+
+	//Redis
+	rdb := redis.NewClient(&redis.Options{
+		Addr: os.Getenv("REDIS_URL"),
+	})
+
+	limiter := redis_rate.NewLimiter(rdb)
 
 	// Repositories
 	userRepo := repositories.NewUserRepo(database)
@@ -65,6 +74,7 @@ func main() {
 
 	protected := r.Group("/")
 	protected.Use(middlewares.AuthMiddleware(secret))
+	protected.Use(middlewares.RateLimiter(limiter))
 	{
 		protected.POST("/files/upload", filesHandler.CreateFiles)
 		protected.GET("/files", filesHandler.GetFilesByUserId)

@@ -46,6 +46,6 @@ func (h *RefreshTokensHandlerImpl) Refresh(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"access_token":token})
+	c.JSON(http.StatusOK, gin.H{"access_token": token})
 
 }

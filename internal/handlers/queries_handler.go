@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"insightly/internal/middlewares"
 	"insightly/internal/services"
 	"net/http"
 
@@ -32,13 +33,7 @@ func (q *QueriesHandlerImpl) CreateQueries(c *gin.Context) {
 		return
 	}
 
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	id, ok := userId.(int)
+	id, ok := middlewares.GetUserID(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -54,13 +49,7 @@ func (q *QueriesHandlerImpl) CreateQueries(c *gin.Context) {
 }
 
 func (q *QueriesHandlerImpl) GetQueriesByUserId(c *gin.Context) {
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	id, ok := userId.(int)
+	id, ok := middlewares.GetUserID(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
