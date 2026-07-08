@@ -9,6 +9,10 @@ import (
 	"github.com/openai/openai-go/v3/responses"
 )
 
+type AiAnalyzer interface {
+	Analyze(csvData string, prompt string) (string, error)
+}
+
 type OpenAIClient struct {
 	Client *openai.Client
 }

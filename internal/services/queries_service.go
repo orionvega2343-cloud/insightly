@@ -16,10 +16,10 @@ type QueriesService interface {
 type QueriesServiceImpl struct {
 	F  repositories.FilesRepository
 	Q  repositories.QueriesRepository
-	Ai *ai.OpenAIClient
+	Ai ai.AiAnalyzer
 }
 
-func NewQueriesService(f repositories.FilesRepository, q repositories.QueriesRepository, ai *ai.OpenAIClient) *QueriesServiceImpl {
+func NewQueriesService(f repositories.FilesRepository, q repositories.QueriesRepository, ai ai.AiAnalyzer) *QueriesServiceImpl {
 	return &QueriesServiceImpl{F: f, Q: q, Ai: ai}
 }
 
