@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"insightly/internal/middlewares"
 	"insightly/internal/services"
 	"io"
 	"net/http"
@@ -30,14 +31,7 @@ func (h *FilesHandlerImpl) CreateFiles(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	//Приводим к assert type 2 проверками
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	id, ok := userId.(int)
+	id, ok := middlewares.GetUserID(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -67,13 +61,7 @@ func (h *FilesHandlerImpl) CreateFiles(c *gin.Context) {
 }
 
 func (h *FilesHandlerImpl) GetFilesByUserId(c *gin.Context) {
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	id, ok := userId.(int)
+	id, ok := middlewares.GetUserID(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -97,13 +85,7 @@ func (h *FilesHandlerImpl) DeleteFile(c *gin.Context) {
 		return
 	}
 
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	id, ok := userId.(int)
+	id, ok := middlewares.GetUserID(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return

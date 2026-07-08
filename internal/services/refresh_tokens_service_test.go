@@ -88,7 +88,7 @@ func Test_GetTokenByValueExpired(t *testing.T) {
 
 	//Act
 	_, err := svc.GetTokenByValue(m.Token)
-	
+
 	assert.Equal(t, errs.TokenExpiredError, err)
 	assert.Error(t, err)
 	tokensRepo.AssertExpectations(t)

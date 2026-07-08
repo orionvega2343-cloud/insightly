@@ -26,12 +26,6 @@ type UserServiceImpl struct {
 	Secret string
 }
 
-type Claims struct {
-	UserId int
-	Email  string
-	jwt.RegisteredClaims
-}
-
 func NewUserServiceImpl(ur repositories.UsersRepository, rtr repositories.RefreshTokensRepository, secret string) *UserServiceImpl {
 	return &UserServiceImpl{Ur: ur, Rtr: rtr, Secret: secret}
 }
@@ -70,7 +64,7 @@ func (s *UserServiceImpl) Login(email, password, secret string) (string, string,
 		return "", "", errs.InvalidPasswordError
 	}
 
-	var c Claims
+	var c models.Claims
 	c.Email = email
 	c.UserId = user.Id
 	c.ExpiresAt = jwt.NewNumericDate(time.Now().Add(24 * time.Hour))
@@ -114,7 +108,7 @@ func (s *UserServiceImpl) generateRefreshToken() (string, error) {
 }
 
 func (s *UserServiceImpl) GenerateAccessToken(userId int, email string) (string, error) {
-	var c Claims
+	var c models.Claims
 	c.UserId = userId
 	c.Email = email
 	c.ExpiresAt = jwt.NewNumericDate(time.Now().Add(24 * time.Hour))

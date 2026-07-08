@@ -1,18 +1,13 @@
 package middlewares
 
 import (
+	"insightly/internal/models"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-type Claims struct {
-	UserId int    `json:"user_id"`
-	Email  string `json:"email"`
-	jwt.RegisteredClaims
-}
 
 func AuthMiddleware(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -24,9 +19,8 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		}
 		cut := strings.TrimPrefix(tokenString, "Bearer ")
 
-
 		//Валидация JWT токена
-		token, err := jwt.ParseWithClaims(cut, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(cut, &models.Claims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
 		})
 		if err != nil || token == nil || !token.Valid {
@@ -35,7 +29,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 			return
 		}
 		//Приведение к type assertion
-		claims, ok := token.Claims.(*Claims)
+		claims, ok := token.Claims.(*models.Claims)
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{})
 			c.Abort()
@@ -46,4 +40,14 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		c.Set("email", claims.Email)
 		c.Next()
 	}
+}
+
+// GetUserID достаёт userId, установленный AuthMiddleware, из контекста запроса.
+func GetUserID(c *gin.Context) (int, bool) {
+	value, ok := c.Get("userId")
+	if !ok {
+		return 0, false
+	}
+	id, ok := value.(int)
+	return id, ok
 }
