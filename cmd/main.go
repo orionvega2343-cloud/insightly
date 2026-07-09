@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "insightly/docs"
 	"insightly/internal/ai"
 	"insightly/internal/db"
 	"insightly/internal/handlers"
@@ -17,8 +18,19 @@ import (
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 	"github.com/redis/go-redis/v9"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title Insightly API
+// @version 1.0
+// @description AI-powered CSV analyzer REST API
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Введите токен в формате "Bearer {access_token}"
 func main() {
 
 	if err := godotenv.Load(".env"); err != nil {
@@ -65,8 +77,11 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	authRoutes := r.Group("/auth")
 	{
+
 		authRoutes.POST("/register", userHandler.Register)
 		authRoutes.POST("/login", userHandler.Login)
 		authRoutes.POST("/refresh", refreshTokensHandler.Refresh)

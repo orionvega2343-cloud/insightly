@@ -23,6 +23,15 @@ func NewUserHandler(us services.UserService, rts services.RefreshTokensService, 
 	return &UserHandlerImpl{Us: us, Rts: rts, Secret: secret}
 }
 
+// Register godoc
+// @Summary Регистрация нового пользователя
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body models.User true "Данные для регистрации"
+// @Success 201 {object} models.User
+// @Failure 400 {object} map[string]string
+// @Router /auth/register [post]
 func (h *UserHandlerImpl) Register(c *gin.Context) {
 	var u models.User
 
@@ -43,6 +52,15 @@ func (h *UserHandlerImpl) Register(c *gin.Context) {
 	return
 }
 
+// Login godoc
+// @Summary Аутентификация пользователя
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body models.User true "Email и пароль"
+// @Success 200 {object} map[string]string "access_token, refresh_token"
+// @Failure 400 {object} map[string]string
+// @Router /auth/login [post]
 func (h *UserHandlerImpl) Login(c *gin.Context) {
 	var u models.User
 

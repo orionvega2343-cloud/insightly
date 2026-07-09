@@ -24,6 +24,17 @@ func NewFilesHandler(f services.FilesService) *FilesHandlerImpl {
 	return &FilesHandlerImpl{F: f}
 }
 
+// CreateFiles godoc
+// @Summary Загрузка CSV файла
+// @Tags files
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "CSV файл"
+// @Success 200 {object} map[string]interface{} "data: models.Files"
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /files/upload [post]
 func (h *FilesHandlerImpl) CreateFiles(c *gin.Context) {
 	//Получаем файл
 	f, err := c.FormFile("file")
@@ -60,6 +71,14 @@ func (h *FilesHandlerImpl) CreateFiles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": file})
 }
 
+// GetFilesByUserId godoc
+// @Summary Получение списка файлов текущего пользователя
+// @Tags files
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} map[string]interface{} "data: []models.Files"
+// @Failure 401 {object} map[string]string
+// @Router /files [get]
 func (h *FilesHandlerImpl) GetFilesByUserId(c *gin.Context) {
 	id, ok := middlewares.GetUserID(c)
 	if !ok {
@@ -76,6 +95,17 @@ func (h *FilesHandlerImpl) GetFilesByUserId(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": files})
 }
 
+// DeleteFile godoc
+// @Summary Удаление файла по ID
+// @Tags files
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID файла"
+// @Success 200 {object} map[string]string "message"
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Router /files/{id} [delete]
 func (h *FilesHandlerImpl) DeleteFile(c *gin.Context) {
 	fileIdParam := c.Param("id")
 
