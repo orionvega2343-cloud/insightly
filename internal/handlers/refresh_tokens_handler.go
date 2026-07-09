@@ -20,6 +20,15 @@ func NewRefreshTokensHandlerImpl(rtr services.RefreshTokensService, secret strin
 	return &RefreshTokensHandlerImpl{Rtr: rtr, Secret: secret, Us: us}
 }
 
+// Refresh godoc
+// @Summary Обновление access token по refresh token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body map[string]string true "refresh_token"
+// @Success 200 {object} map[string]string "access_token"
+// @Failure 400 {object} map[string]string
+// @Router /auth/refresh [post]
 func (h *RefreshTokensHandlerImpl) Refresh(c *gin.Context) {
 	var client struct {
 		Token string `json:"refresh_token"`
